@@ -103,7 +103,7 @@ gambling_opinion <- data %>%
   mutate(Percentage = round((Count / sum(Count)) * 100, 2))
 
 
-# Visualize perception of gambling
+#Visualize perception of gambling
 ggplot(gambling_opinion, aes(x = ConsideredGambling, y = Percentage, fill = ConsideredGambling)) +
   geom_bar(stat = "identity", color = "black") +
   labs(title = "Do Participants Consider Loot Boxes as Gambling?",
@@ -114,7 +114,7 @@ ggplot(gambling_opinion, aes(x = ConsideredGambling, y = Percentage, fill = Cons
 
 ---
 
-## Step 4: Support for Regulation
+### Support for Regulation
 ```{r regulation-analysis}
 #filter and group the data while also changing a column entry so it fits in the chart
 regulation_support <- data %>%
@@ -133,7 +133,7 @@ ggplot(regulation_support, aes(x = StricterRegulation, y = Percentage, fill = St
        y = "Percentage") +
   theme(axis.text.x = element_text(angle =50, vjust = 1, hjust=1))
 ```
-##Step 5 : Familiarity vs Regulation support
+### Familiarity vs Regulation support
 ```{r}
 # filtering and grouping the data before visualization
 heatmap_data <- data %>%
