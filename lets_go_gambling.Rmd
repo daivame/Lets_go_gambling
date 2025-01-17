@@ -1,0 +1,162 @@
+---
+title: "Loot Boxes in Video Games: Analysis and Insights"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+This R Markdown file outlines the steps taken to analyze survey data related to loot boxes in video games. The analysis focuses on trends in spending, perceptions of gambling, and support for regulation.
+
+---
+
+## Step 1: Load Libraries and Data
+```{r libraries, warning=FALSE}
+# Load required libraries
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+```
+
+```{r load-data}
+# Load the dataset
+data <- read.csv("Survey_Results.csv")
+
+# Rename columns for better readability
+colnames(data) <- c(
+  "Agreement", "Familiarity", "PurchasedLootBox", "EngagementFrequency",
+  "YearlySpending", "NegativeFinancialImpact", "PurchaseFactors", 
+  "OtherFactors", "ImpactOnExperience", "PressureToPurchase", 
+  "AddictiveBehavior", "ConsideredGambling", "RegulationSupport", 
+  "AgeRestrictionsAwareness", "AgeLimitSupport", "OddsDisclosure", 
+  "StricterRegulation", "ObservedGamblingProblems"
+)
+```
+
+---
+
+## Step 2: Data Cleaning
+```{r data-cleaning}
+# Handle missing values and standardize responses
+data <- data %>%
+   mutate(across(where(is.character), ~ifelse(. == "" | . == " ", "No Response", .))) %>%
+  mutate(across(where(is.character), ~replace_na(., "No Response")))
+
+#Remove rows for participants who did not agree
+data <- data[data$Agreement != "Do not Agree",]
+
+```
+
+---
+
+## Step 3: Analyze Trends
+
+### Spending Patterns
+```{r spending-analysis}
+# Scatter plot for spending vs. frequency
+
+#Filter out people who haven't spent any money
+filtered_data = data %>% 
+  filter(YearlySpending != "Have not spent any money")
+
+ggplot(filtered_data, aes(x = YearlySpending, y = EngagementFrequency)) +
+  geom_jitter(color = "purple", size = 2, alpha = 0.6) +
+  labs(title = "Spending vs. Engagement Frequency",
+       x = "Yearly Spending (\u00A3)",
+       y = "Engagement Frequency") +
+  theme_minimal()
+
+
+```
+
+### Familiarity with Loot Boxes
+```{r familiarity-analysis}
+# Pie chart for familiarity levels
+familiarity_dist <- data %>%
+  group_by(Familiarity) %>%
+  summarise(Count = n()) %>%
+  mutate(Percentage = round((Count / sum(Count)) * 100, 2))
+
+ggplot(familiarity_dist, aes(x = "", y = Percentage, fill = Familiarity)) +
+  geom_bar(stat = "identity", width = 1, color = "black") +
+  coord_polar("y") +
+  labs(title = "Familiarity with Loot Boxes",
+       fill = "Familiarity Level") +
+  geom_text(aes(label = paste0(Percentage, "%")),            # Add percentage labels
+            position = position_stack(vjust = 0.5),          # Center labels in slices
+            size = 4, color = "white")+ 
+  theme_void()
+
+```
+
+### Perceptions of Gambling
+```{r gambling-analysis}
+# filtering and sorting the data
+gambling_opinion <- data %>%
+  filter(ConsideredGambling != "No Response") %>%
+  group_by(ConsideredGambling) %>%
+  summarise(Count = n()) %>%
+  mutate(Percentage = round((Count / sum(Count)) * 100, 2))
+
+
+# Visualize perception of gambling
+ggplot(gambling_opinion, aes(x = ConsideredGambling, y = Percentage, fill = ConsideredGambling)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Do Participants Consider Loot Boxes as Gambling?",
+       x = "Response",
+       y = "Percentage") +
+  theme_minimal()
+```
+
+---
+
+## Step 4: Support for Regulation
+```{r regulation-analysis}
+#filter and group the data while also changing a column entry so it fits in the chart
+regulation_support <- data %>%
+  filter(StricterRegulation != "No Response") %>%
+  group_by(StricterRegulation) %>%
+  summarise(Count = n()) %>%
+  mutate(Percentage = round((Count / sum(Count)) * 100, 2)) %>% 
+  mutate(StricterRegulation = gsub("No, the current level of regulation is sufficient", "Regulation is already sufficient", StricterRegulation)) 
+
+
+# Visualize regulation support
+ggplot(regulation_support, aes(x = StricterRegulation, y = Percentage, fill = StricterRegulation)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Support for Stricter Regulation of Loot Boxes",
+       x = "Regulation Level",
+       y = "Percentage") +
+  theme(axis.text.x = element_text(angle =50, vjust = 1, hjust=1))
+```
+##Step 5 : Familiarity vs Regulation support
+```{r}
+# filtering and grouping the data before visualization
+heatmap_data <- data %>%
+  filter(Familiarity != "No Response", RegulationSupport != "No Response") %>%
+  group_by(Familiarity, RegulationSupport) %>%
+  summarise(Count = n())
+
+#visualizing filtered data
+ggplot(heatmap_data, aes(x = Familiarity, y = RegulationSupport, fill = Count)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(low = "lightblue", high = "darkblue") +
+  labs(title = "Heatmap of Familiarity vs. Regulation Support",
+       x = "Familiarity Level",
+       y = "Regulation Support",
+       fill = "Count") +
+  theme_minimal()
+
+
+```
+
+---
+
+## Conclusion
+This analysis provides insights into spending patterns, perceptions of gambling, and regulatory opinions regarding loot boxes in video games. These findings can guide stakeholders in making informed decisions about game design, monetization strategies, and policies.
+
+
