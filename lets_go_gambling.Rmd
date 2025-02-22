@@ -134,7 +134,7 @@ ggplot(regulation_support, aes(x = StricterRegulation, y = Percentage, fill = St
   theme(axis.text.x = element_text(angle =50, vjust = 1, hjust=1))
 ```
 ### Familiarity vs Regulation support
-```{r}
+```{r message=FALSE, warning=FALSE}
 # filtering and grouping the data before visualization
 heatmap_data <- data %>%
   filter(Familiarity != "No Response", RegulationSupport != "No Response") %>%
@@ -158,5 +158,3 @@ ggplot(heatmap_data, aes(x = Familiarity, y = RegulationSupport, fill = Count)) 
 
 ## Conclusion
 This analysis provides insights into spending patterns, perceptions of gambling, and regulatory opinions regarding loot boxes in video games. These findings can guide stakeholders in making informed decisions about game design, monetization strategies, and policies.
-
-
